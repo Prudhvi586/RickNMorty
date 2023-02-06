@@ -2,7 +2,9 @@ package com.pru.ricknmorty
 
 import android.app.Application
 import android.content.Context
+import androidx.room.Room
 import com.pru.ricknmorty.controller.AppController
+import com.pru.ricknmorty.db.AppDatabase
 import com.pru.ricknmorty.remote.ApiService
 import com.pru.ricknmorty.repository.ApiRepository
 import com.pru.ricknmorty.utils.Constants
@@ -36,6 +38,10 @@ class MyApp : Application() {
         val apiService = Retrofit.Builder().baseUrl(Constants.kBaseUrl)
             .addConverterFactory(GsonConverterFactory.create()).build()
             .create(ApiService::class.java)
-        apiRepository_ = ApiRepository(apiService)
+        val appDatabase =
+            Room.databaseBuilder(applicationContext, AppDatabase::class.java, "app-database")
+                .fallbackToDestructiveMigration()
+                .build()
+        apiRepository_ = ApiRepository(apiService, appDatabase)
     }
 }
